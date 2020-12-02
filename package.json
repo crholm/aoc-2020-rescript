@@ -1,0 +1,14 @@
+{
+  "name": "aoc",
+  "version": "0.0.1",
+  "author": "Rasmus Holm",
+  "license": "MIT",
+  "scripts": {
+    "make": "bsb -clean-world && bsb -make-world",
+    "dev": "bsb && node ./lib/js/src/Day${Day}.js",
+    "days": "bsb && node ./lib/js/src/Day1.js"
+  },
+  "devDependencies": {
+    "bs-platform": "^8.3.3"
+  }
+}
