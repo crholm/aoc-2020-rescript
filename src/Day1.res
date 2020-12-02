@@ -29,11 +29,11 @@ let rec find_thruple: (('a, 'a, 'a) => bool, list<'a>) => option<('a, 'a, 'a)> =
   switch l |> List.length {
   | 0 => None
   | _ => {
-      let z = l |> List.hd
+      let x = l |> List.hd
       let tail = l |> List.tl
-      switch tail |> find_tuple(z |> fn) {
+      switch tail |> find_tuple(x |> fn) {
       | None => tail |> find_thruple(fn)
-      | Some(x, y) => Some(x, y, z)
+      | Some(y, z) => Some(x, y, z)
       }
     }
   }
