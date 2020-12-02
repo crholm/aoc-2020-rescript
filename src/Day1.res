@@ -11,28 +11,28 @@ let rec find: ('a => bool, list<'a>) => option<'a> = (fn, l) => {
   }
 }
 
-let rec find_tuple = (target, l) => {
+let rec find_tuple: (('a, 'a) => bool, list<'a>) => option<('a, 'a)> = (fn, l) => {
   switch l |> List.length {
   | 0 => None
   | _ => {
       let x = l |> List.hd
       let tail = l |> List.tl
-      switch tail |> find(y => x + y == target) {
-      | None => tail |> find_tuple(target)
+      switch tail |> find(x |> fn) {
+      | None => tail |> find_tuple(fn)
       | Some(y) => Some(x, y)
       }
     }
   }
 }
 
-let rec find_thruple = (target, l) => {
+let rec find_thruple: (('a, 'a, 'a) => bool, list<'a>) => option<('a, 'a, 'a)> = (fn, l) => {
   switch l |> List.length {
   | 0 => None
   | _ => {
       let z = l |> List.hd
       let tail = l |> List.tl
-      switch tail |> find_tuple(target - z) {
-      | None => tail |> find_thruple(target)
+      switch tail |> find_tuple(z |> fn) {
+      | None => tail |> find_thruple(fn)
       | Some(x, y) => Some(x, y, z)
       }
     }
@@ -41,7 +41,7 @@ let rec find_thruple = (target, l) => {
 
 Js.log("=== AOC Day 1 ===")
 
-switch Data.list |> find_tuple(2020) {
+switch Data.list |> find_tuple((x, y) => x + y == 2020) {
 | None => Js.log("No tuple match")
 | Some(x, y) => {
     let xs = string_of_int(x)
@@ -51,7 +51,7 @@ switch Data.list |> find_tuple(2020) {
   }
 }
 
-switch Data.list |> find_thruple(2020) {
+switch Data.list |> find_thruple((x, y, z) => x + y + z == 2020) {
 | None => Js.log("No thruple match")
 | Some(x, y, z) => {
     let xs = string_of_int(x)
