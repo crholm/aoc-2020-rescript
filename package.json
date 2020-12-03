@@ -6,7 +6,7 @@
   "scripts": {
     "make": "bsb -clean-world && bsb -make-world",
     "dev": "bsb && node ./lib/js/src/Day${Day}.js",
-    "days": "bsb && node ./lib/js/src/Day*.js"
+    "days": "bsb && ls ./lib/js/src/Day*.js | xargs -n 1 node"
   },
   "devDependencies": {
     "bs-platform": "^8.3.3"
