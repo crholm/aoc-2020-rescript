@@ -58,6 +58,8 @@ switch Data.list |> find_thruple((x, y, z) => x + y + z == 2020) {
     let ys = string_of_int(y)
     let zs = string_of_int(z)
     xs ++ "*" ++ ys ++ "*" ++ zs ++ " = " ++ string_of_int(x * y * z)
-      |> Js.log2("2 > " ++ xs ++ "+" ++ ys ++ "+" ++ zs ++ " = " ++ string_of_int(x + y + z) ++ "\n   ")
+      |> Js.log2(
+        "2 > " ++ xs ++ "+" ++ ys ++ "+" ++ zs ++ " = " ++ string_of_int(x + y + z) ++ "\n   ",
+      )
   }
 }
