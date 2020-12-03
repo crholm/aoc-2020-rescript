@@ -28,6 +28,7 @@ Data.str |> split("\n") |> List.map(parse) |> List.map(p => {
     List.init(String.length(p.pwd), String.get(p.pwd))
     |> List.filter(c => c == p.cha)
     |> List.length
+
   p.min <= l && l <= p.max
 }) |> List.filter(a => a) |> List.length |> Js.log2("1 >")
 
