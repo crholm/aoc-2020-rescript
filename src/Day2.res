@@ -37,7 +37,7 @@ Data.str
    })
 |> List.filter(a => a)
 |> List.length 
-|> Js.log2("1 > ")
+|> Js.log2("1 >")
 
 
 
@@ -52,4 +52,4 @@ Data.str
    })
 |> List.filter(a => a)
 |> List.length 
-|> Js.log2("2 > ")
+|> Js.log2("2 >")
