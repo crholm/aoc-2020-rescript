@@ -1,4 +1,4 @@
-module Data = Day1_Data
+module Data = Data_Day1
 
 let rec find: ('a => bool, list<'a>) => option<'a> = (fn, l) => {
   switch l |> List.length {
