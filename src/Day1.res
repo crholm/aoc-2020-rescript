@@ -47,7 +47,7 @@ switch Data.list |> find_tuple((x, y) => x + y == 2020) {
     let xs = string_of_int(x)
     let ys = string_of_int(y)
     xs ++ "*" ++ ys ++ " = " ++ string_of_int(x * y)
-      |> Js.log2("> " ++ xs ++ "+" ++ ys ++ " = " ++ string_of_int(x + y) ++ "\n ")
+      |> Js.log2("1 > " ++ xs ++ "+" ++ ys ++ " = " ++ string_of_int(x + y) ++ "\n   ")
   }
 }
 
@@ -58,6 +58,6 @@ switch Data.list |> find_thruple((x, y, z) => x + y + z == 2020) {
     let ys = string_of_int(y)
     let zs = string_of_int(z)
     xs ++ "*" ++ ys ++ "*" ++ zs ++ " = " ++ string_of_int(x * y * z)
-      |> Js.log2("> " ++ xs ++ "+" ++ ys ++ "+" ++ zs ++ " = " ++ string_of_int(x + y + z) ++ "\n ")
+      |> Js.log2("2 > " ++ xs ++ "+" ++ ys ++ "+" ++ zs ++ " = " ++ string_of_int(x + y + z) ++ "\n   ")
   }
 }

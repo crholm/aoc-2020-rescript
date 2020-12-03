@@ -46,8 +46,9 @@ Data.str
 |> List.map(parse) 
 |> List.map(p => {
     let l = List.init(String.length(p.pwd), String.get(p.pwd)) 
-    l -> List.nth(p.min - 1) == p.cha 
-    &&  l -> List.nth(p.max - 1) == p.cha
+    let a = l -> List.nth(p.min - 1) == p.cha 
+    let b = l -> List.nth(p.max - 1) == p.cha
+    a && !b || !a && b // xor
    })
 |> List.filter(a => a)
 |> List.length 
