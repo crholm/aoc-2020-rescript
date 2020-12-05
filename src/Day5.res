@@ -31,19 +31,17 @@ let bisect = (intr: interval, direction: char) => {
   }
 }
 
-let make_list = str => {
-  List.init(String.length(str), String.get(str))
-}
+let list_of_string = str => List.init(String.length(str), String.get(str))
 
 let to_ticket = address => {
   let row =
     address->String.sub(0, 7)
-    |> make_list
+    |> list_of_string
     |> List.fold_left(bisect, {min: 0, max: 127})
     |> (i => i.max)
   let col =
     address->String.sub(7, 3)
-    |> make_list
+    |> list_of_string
     |> List.fold_left(bisect, {min: 0, max: 7})
     |> (i => i.max)
   {row: row, col: col, num: row * 8 + col}
