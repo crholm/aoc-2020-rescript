@@ -59,8 +59,8 @@ let imap = tickets |> List.fold_left((acc, t) => {
   ISet.add(t.num, acc)
 }, ISet.empty)
 
-tickets |> List.fold_left((acc, t) => {
-  acc > 0 ? acc : !ISet.mem(t.num + 1, imap) && ISet.mem(t.num + 2, imap) ? t.num + 1 : 0
+tickets |> List.map(t => t.num) |> List.fold_left((acc, num) => {
+  acc > 0 ? acc : !ISet.mem(num + 1, imap) && ISet.mem(num + 2, imap) ? num + 1 : 0
 }, 0) |> Js.log2("2 >")
 
 // Part 2, alt (differenc between sets)
