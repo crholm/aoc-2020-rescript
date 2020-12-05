@@ -1,11 +1,8 @@
 // https://adventofcode.com/2020/day/5
-Js.log("\n=== AOC Day 5 ===")
 
 module Data = Data_Day5
-
-let split = (del, str) => {
-  Js.String2.split(str, del) |> Array.to_list
-}
+module AOC = AOC
+AOC.print_header(5)
 
 type interval = {
   min: int,
@@ -31,24 +28,22 @@ let bisect = (intr: interval, direction: char) => {
   }
 }
 
-let list_of_string = str => List.init(String.length(str), String.get(str))
-
 let to_ticket = address => {
   let row =
     address->String.sub(0, 7)
-    |> list_of_string
+    |> AOC.charlist_of_string
     |> List.fold_left(bisect, {min: 0, max: 127})
     |> (i => i.max)
   let col =
     address->String.sub(7, 3)
-    |> list_of_string
+    |> AOC.charlist_of_string
     |> List.fold_left(bisect, {min: 0, max: 7})
     |> (i => i.max)
   {row: row, col: col, num: row * 8 + col}
 }
 
 // Part 1
-let tickets = Data_Day5.str |> split("\n") |> List.map(to_ticket)
+let tickets = Data_Day5.str |> AOC.str_split("\n") |> List.map(to_ticket)
 
 tickets |> List.fold_left((max, t) => {
   t.num > max ? t.num : max
@@ -67,3 +62,11 @@ let imap = tickets |> List.fold_left((acc, t) => {
 tickets |> List.fold_left((acc, t) => {
   acc > 0 ? acc : !ISet.mem(t.num + 1, imap) && ISet.mem(t.num + 2, imap) ? t.num + 1 : 0
 }, 0) |> Js.log2("2 >")
+
+// Part 2, alt (differenc between sets)
+let min = tickets |> List.map(e => e.num) |> AOC.min_of_list
+let max = tickets |> List.map(e => e.num) |> AOC.max_of_list
+let seg =
+  List.init(max - min + 1, i => i + min) |> List.fold_left((acc, i) => ISet.add(i, acc), ISet.empty)
+
+ISet.diff(seg, imap) |> ISet.elements |> List.hd |> Js.log2("2*>")

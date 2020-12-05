@@ -1,7 +1,8 @@
 // https://adventofcode.com/2020/day/4
-Js.log("\n=== AOC Day 4 ===")
 
 module Data = Data_Day4
+module AOC = AOC
+AOC.print_header(4)
 
 /// Start: Map stuff
 module StringMap = Map.Make({
@@ -37,11 +38,9 @@ let reg_match = (k, reg, m) => {
 /// End: Map stuff
 
 // Start: String stuff
-let split = (del, str) => {
-  Js.String2.split(str, del) |> Array.to_list
-}
+
 let tuplesplit = (del, str) => {
-  let l = split(del, str)
+  let l = AOC.str_split(del, str)
   (List.nth(l, 0), List.nth(l, 1))
 }
 let replace = (old, _new, str) => {
@@ -52,8 +51,11 @@ let replace = (old, _new, str) => {
 // Part 1
 
 let passports =
-  Data.str |> split("\n\n") |> List.map(s => s |> replace(%re("/\\n/g"), " ")) |> List.map(s => {
-    s |> split(" ") |> List.fold_left((acc, e) => {
+  Data.str
+  |> AOC.str_split("\n\n")
+  |> List.map(s => s |> replace(%re("/\\n/g"), " "))
+  |> List.map(s => {
+    s |> AOC.str_split(" ") |> List.fold_left((acc, e) => {
       let (k, v) = e |> tuplesplit(":")
       StringMap.add(k, v, acc)
     }, StringMap.empty)

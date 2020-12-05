@@ -1,11 +1,8 @@
 // https://adventofcode.com/2020/day/3
-Js.log("\n=== AOC Day 3 ===")
 
 module Data = Data_Day3
-
-let split = (del, str) => {
-  Js.String2.split(str, del) |> Array.to_list
-}
+module AOC = AOC
+AOC.print_header(3)
 
 let filteri: ((int, 'a) => bool, list<'a>) => list<'a> = (fn, l) => {
   let (_, res) = l |> List.fold_left((acc, e) => {
@@ -28,7 +25,7 @@ let trees = (dx, dy, world) => {
   }) |> List.filter(c => c == '#') |> List.length
 }
 
-let world = Data.str |> split("\n")
+let world = Data.str |> AOC.str_split("\n")
 
 world |> trees(3, 1) |> Js.log2("1 >")
 
