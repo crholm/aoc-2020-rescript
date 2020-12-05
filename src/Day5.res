@@ -1,4 +1,5 @@
 // https://adventofcode.com/2020/day/5
+Js.log("\n=== AOC Day 5 ===")
 
 module Data = Data_Day5
 
@@ -17,14 +18,12 @@ type ticket = {
   num: int,
 }
 
-Js.log("\n=== AOC Day 5 ===")
-
 let bisect = (intr: interval, direction: char) => {
   // R means to take the upper half
   // B means to take the upper half
   // L means to take the lower half,
   // F means to take the lower half
-  let move = (intr.max - intr.min) / 2
+  let move = (intr.max - intr.min) / 2 + 1
   switch direction {
   | 'B' | 'R' => {...intr, min: intr.min + move}
   | 'F' | 'L' => {...intr, max: intr.max - move}
@@ -32,25 +31,26 @@ let bisect = (intr: interval, direction: char) => {
   }
 }
 
-let sub_str_list = (str, start, len) => {
-  let part = String.sub(str, start, len)
-  List.init(String.length(part), String.get(part))
+let make_list = str => {
+  List.init(String.length(str), String.get(str))
 }
 
-let toTicket = address => {
-  let rowlist = sub_str_list(address, 0, 7)
-  let collist = sub_str_list(address, 7, 3)
-
-  let rowr = rowlist |> List.fold_left(bisect, {min: 0, max: 127})
-  let colr = collist |> List.fold_left(bisect, {min: 0, max: 8})
-
-  let row = List.hd(rowlist) == 'B' ? rowr.max : rowr.min
-  let col = List.hd(rowlist) == 'L' ? colr.max : colr.min
+let to_ticket = address => {
+  let row =
+    address->String.sub(0, 7)
+    |> make_list
+    |> List.fold_left(bisect, {min: 0, max: 127})
+    |> (i => i.max)
+  let col =
+    address->String.sub(7, 3)
+    |> make_list
+    |> List.fold_left(bisect, {min: 0, max: 7})
+    |> (i => i.max)
   {row: row, col: col, num: row * 8 + col}
 }
 
 // Part 1
-let tickets = Data_Day5.str |> split("\n") |> List.map(toTicket)
+let tickets = Data_Day5.str |> split("\n") |> List.map(to_ticket)
 
 tickets |> List.fold_left((max, t) => {
   t.num > max ? t.num : max
