@@ -1,3 +1,6 @@
+// https://adventofcode.com/2020/day/3
+Js.log("\n=== AOC Day 3 ===")
+
 module Data = Data_Day3
 
 let split = (del, str) => {
@@ -24,8 +27,6 @@ let trees = (dx, dy, world) => {
     String.get(str, ii)
   }) |> List.filter(c => c == '#') |> List.length
 }
-
-Js.log("=== AOC Day 3 ===")
 
 let world = Data.str |> split("\n")
 

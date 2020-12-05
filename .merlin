@@ -1,7 +1,7 @@
 ####{BSB GENERATED: NO EDIT
-FLG -ppx '/home/raz/workspace/misc/aoc-2020-rescript/node_modules/bs-platform/linux/bsc.exe -as-ppx '
-S /home/raz/workspace/misc/aoc-2020-rescript/node_modules/bs-platform/lib/ocaml
-B /home/raz/workspace/misc/aoc-2020-rescript/node_modules/bs-platform/lib/ocaml
+FLG -ppx '/usr/lib/node_modules/bs-platform/linux/bsc.exe -as-ppx '
+S /usr/lib/node_modules/bs-platform/lib/ocaml
+B /usr/lib/node_modules/bs-platform/lib/ocaml
 FLG -w +a-4-9-20-40-41-42-50-61-102+A-42-48-40-42-61
 S src
 B lib/bs/src

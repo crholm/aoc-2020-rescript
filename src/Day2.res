@@ -1,3 +1,6 @@
+// https://adventofcode.com/2020/day/2
+Js.log("\n=== AOC Day 2 ===")
+
 module Data = Data_Day2
 
 type pass = {
@@ -20,8 +23,6 @@ let parse = raw => {
     max: parts->List.nth(0) |> split("-") |> List.rev |> List.hd |> int_of_string,
   }
 }
-
-Js.log("=== AOC Day 2 ===")
 
 Data.str |> split("\n") |> List.map(parse) |> List.map(p => {
   let l =

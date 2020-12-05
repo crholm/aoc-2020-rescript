@@ -1,3 +1,6 @@
+// https://adventofcode.com/2020/day/4
+Js.log("\n=== AOC Day 4 ===")
+
 module Data = Data_Day4
 
 /// Start: Map stuff
@@ -46,7 +49,7 @@ let replace = (old, _new, str) => {
 }
 // End: String stuff
 
-Js.log("=== AOC Day 4 ===")
+// Part 1
 
 let passports =
   Data.str |> split("\n\n") |> List.map(s => s |> replace(%re("/\\n/g"), " ")) |> List.map(s => {
