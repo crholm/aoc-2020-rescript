@@ -15,3 +15,9 @@ let min_of_list = (l: list<'a>) => {
 let max_of_list = (l: list<'a>) => {
   List.fold_left(max, List.hd(l), l)
 }
+
+let str_replace = (old, _new, str) => {
+  Js.String2.replaceByRe(str, old, _new)
+}
+
+let frev: ('f, 'a, 'b) => 'c = (fn, a, b) => fn(b, a)
