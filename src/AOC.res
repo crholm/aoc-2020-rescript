@@ -6,6 +6,16 @@ let str_split = (del, str) => {
   Js.String2.split(str, del) |> Array.to_list
 }
 
+let filteri: ((int, 'a) => bool, list<'a>) => list<'a> = (fn, l) => {
+  let (_, res) = l |> List.fold_left((acc, e) => {
+    let (i, l) = acc
+    let r = fn(i, e) ? list{e} : list{}
+
+    (i + 1, List.append(l, r))
+  }, (0, list{}))
+  res
+}
+
 let charlist_of_string = str => List.init(String.length(str), String.get(str))
 
 let min_of_list = (l: list<'a>) => {
@@ -20,4 +30,19 @@ let str_replace = (old, _new, str) => {
   Js.String2.replaceByRe(str, old, _new)
 }
 
-let frev: ('f, 'a, 'b) => 'c = (fn, a, b) => fn(b, a)
+let frev: (('b, 'a) => 'c, 'a, 'b) => 'c = (fn, a, b) => fn(b, a)
+
+let printn_l = (n, l) => {
+  l |> filteri((i, _) => i < n) |> List.iteri((i, e) => {
+    switch i {
+    | 0 => Js.log2("{", e)
+    | _ =>
+      if i < n - 1 {
+        Js.log2(",", e)
+      } else {
+        Js.log3(",", e, "}")
+      }
+    }
+  })
+}
+let print_l = l => l |> printn_l(List.length(l))

@@ -4,18 +4,8 @@ module Data = Data_Day3
 module AOC = AOC
 AOC.print_header(3)
 
-let filteri: ((int, 'a) => bool, list<'a>) => list<'a> = (fn, l) => {
-  let (_, res) = l |> List.fold_left((acc, e) => {
-    let (i, l) = acc
-    let r = fn(i, e) ? list{e} : list{}
-
-    (i + 1, List.append(l, r))
-  }, (0, list{}))
-  res
-}
-
 let trees = (dx, dy, world) => {
-  world |> filteri((row, _) => {
+  world |> AOC.filteri((row, _) => {
     mod(row, dy) == 0
   }) |> List.mapi((i, str) => {
     let len = String.length(str)
