@@ -69,4 +69,3 @@ let rec numOfBags = l => {
   }, 0)
 }
 SMap.find("shiny gold", graph) |> numOfBags |> Js.log2("2 >")
-//126
