@@ -6,6 +6,12 @@ let str_split = (del, str) => {
   Js.String2.split(str, del) |> Array.to_list
 }
 
+let str_join = (del: string, l: list<string>) => {
+  l |> List.tl |> List.fold_left((acc, e) => {
+    acc ++ del ++ e
+  }, l |> List.hd)
+}
+
 let filteri: ((int, 'a) => bool, list<'a>) => list<'a> = (fn, l) => {
   let (_, res) = l |> List.fold_left((acc, e) => {
     let (i, l) = acc
