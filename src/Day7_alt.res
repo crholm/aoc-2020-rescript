@@ -10,7 +10,6 @@ let getOr = (key, default, m) => {
   SMap.mem(key, m) ? SMap.find(key, m) : default
 }
 
-
 type edge = {
   name: string,
   weight: int,
@@ -27,8 +26,6 @@ let parents = (key, g) => {
   getOr(key, list{}, g.reverse)
 }
 
-
-
 let parse_children = a => {
   switch a {
   | "no other" => list{}
@@ -41,31 +38,31 @@ let parse_children = a => {
   }
 }
 
-let g = Data.str |> AOC.str_split("\n") |> List.map(l => {
-  let a =
-    l
-    |> AOC.str_replace(%re("/\\./g"), "")
-    |> AOC.str_replace(%re("/ bags/g"), "")
-    |> AOC.str_replace(%re("/ bag/g"), "")
-    |> AOC.str_split(" contain ")
-  let node = a->List.nth(0)
-  let children = a->List.nth(1) |> parse_children
-  (node, children)
+let clean_line = s => {
+  s
+  |> AOC.str_replace(%re("/\\./g"), "")
+  |> AOC.str_replace(%re("/ bags/g"), "")
+  |> AOC.str_replace(%re("/ bag/g"), "")
+}
 
+let g = Data.str |> AOC.str_split("\n") |> List.map(l => {
+  let a = l |> clean_line |> AOC.str_split(" contain ")
+  let parent = a->List.nth(0)
+  let children = a->List.nth(1) |> parse_children
+  (parent, children)
 }) |> List.fold_left((g, (parent, children)) => {
-  let f = g.forward |> SMap.add(parent, children)
-  let r = children |> List.fold_left((acc, child) => {
-    let _new = acc |> getOr(child.name, list{}) |> List.append(list{{name: parent, weight: child.weight}})
+  let fwd = g.forward |> SMap.add(parent, children)
+  let rev = children |> List.fold_left((acc, child) => {
+    let _new =
+      acc |> getOr(child.name, list{}) |> List.append(list{{name: parent, weight: child.weight}})
     acc |> SMap.add(child.name, _new)
   }, g.reverse)
-  {forward: f, reverse: r}
+  {forward: fwd, reverse: rev}
 }, {forward: SMap.empty, reverse: SMap.empty})
-
-
 
 // // Part 1
 let rec allParents = (g, l) => {
-  l |> List.map(c => parents(c.name, g) |> allParents(g) ) |> List.flatten |> List.append(l)
+  l |> List.map(c => parents(c.name, g) |> allParents(g)) |> List.flatten |> List.append(l)
 }
 
 parents("shiny gold", g)
