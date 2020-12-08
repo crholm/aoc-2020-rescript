@@ -26,6 +26,22 @@ let parents = (key, g) => {
   getOr(key, list{}, g.reverse)
 }
 
+let add_edge = (node, edge, g) => {
+  let ff =
+    g.forward
+    |> getOr(node, list{})
+    |> List.append(list{edge})
+    |> List.sort_uniq((a, b) => Pervasives.compare(a, b))
+
+  let rr =
+    g.reverse
+    |> getOr(edge.name, list{})
+    |> List.append(list{{name: node, weight: edge.weight}})
+    |> List.sort_uniq((a, b) => Pervasives.compare(a, b))
+
+  {forward: SMap.add(node, ff, g.forward), reverse: SMap.add(edge.name, rr, g.reverse)}
+}
+
 let parse_children = a => {
   switch a {
   | "no other" => list{}
@@ -45,19 +61,15 @@ let clean_line = s => {
   |> AOC.str_replace(%re("/ bag/g"), "")
 }
 
+
+// Constructing graph
 let g = Data.str |> AOC.str_split("\n") |> List.map(l => {
   let a = l |> clean_line |> AOC.str_split(" contain ")
   let parent = a->List.nth(0)
   let children = a->List.nth(1) |> parse_children
   (parent, children)
 }) |> List.fold_left((g, (parent, children)) => {
-  let fwd = g.forward |> SMap.add(parent, children)
-  let rev = children |> List.fold_left((acc, child) => {
-    let _new =
-      acc |> getOr(child.name, list{}) |> List.append(list{{name: parent, weight: child.weight}})
-    acc |> SMap.add(child.name, _new)
-  }, g.reverse)
-  {forward: fwd, reverse: rev}
+  children |> List.fold_left(add_edge(parent)->AOC.frev, g)
 }, {forward: SMap.empty, reverse: SMap.empty})
 
 // // Part 1
