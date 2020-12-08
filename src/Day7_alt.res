@@ -41,6 +41,7 @@ module Graph = {
 
     {forward: SMap.add(node, ff, g.forward), reverse: SMap.add(edge.name, rr, g.reverse)}
   }
+  let empty = {forward: SMap.empty, reverse: SMap.empty}
 }
 
 let parse_children = a => {
@@ -70,7 +71,7 @@ let g = Data.str |> AOC.str_split("\n") |> List.map(l => {
   (parent, children)
 }) |> List.fold_left((g, (parent, children)) => {
   children |> List.fold_left(Graph.add_edge(parent)->AOC.frev, g)
-}, {forward: SMap.empty, reverse: SMap.empty})
+}, Graph.empty)
 
 // // Part 1
 let rec allParents = (g, l) => {
@@ -91,4 +92,5 @@ let rec bagContent = (g, l) => {
     acc + bag.weight + bag.weight * bagContent(g, Graph.children(bag.name, g))
   }, 0)
 }
+
 Graph.children("shiny gold", g) |> bagContent(g) |> Js.log2("2 >")
