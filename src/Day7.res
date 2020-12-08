@@ -1,3 +1,5 @@
+// https://adventofcode.com/2020/day/7
+
 module Data = Data_Day7
 module AOC = AOC
 AOC.print_header(7)
@@ -36,9 +38,7 @@ let graph = Data.str |> AOC.str_split("\n") |> List.map(l => {
 // Part 1
 let rev = SMap.fold((key: string, v, acc) => {
   v |> List.fold_left((acc2, (name, _)) => {
-    let now = SMap.mem(name, acc2) ? SMap.find(name, acc2) : list{}
-
-    let res = now |> List.append(list{key})
+    let res = (SMap.mem(name, acc2) ? SMap.find(name, acc2) : list{}) |> List.append(list{key})
     SMap.add(name, res, acc2)
   }, acc)
 }, graph, SMap.empty)

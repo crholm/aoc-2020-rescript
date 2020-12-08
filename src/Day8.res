@@ -1,19 +1,12 @@
+// https://adventofcode.com/2020/day/6
+
 module Data = Data_Day8
 module AOC = AOC
-
-let str = "nop +0
-acc +1
-jmp +4
-acc +3
-jmp -3
-acc -99
-acc +1
-jmp -4
-acc +6"
-// 5
+AOC.print_header(8)
 
 type instruction = NOP(int) | ACC(int) | JMP(int) | UNK
 type register = {acc: int, trace: list<int>, success: bool}
+let emptyState = {acc: 0, trace: list{}, success: false}
 
 let program = Data.str |> AOC.str_split("\n") |> List.map(l => {
   let pair = l |> AOC.str_split(" ")
@@ -27,63 +20,47 @@ let program = Data.str |> AOC.str_split("\n") |> List.map(l => {
 })
 
 let rec exec = (pointer, state, program) => {
-  if state.trace |> List.exists(i => i == pointer) {
-    state
+  if List.length(program) <= pointer {
+    {...state, success: true}
+  } else if pointer < 0 {
+    {...state, success: false}
+  } else if List.exists(i => i == pointer, state.trace) {
+    {...state, success: false}
   } else {
-    let ins = List.nth(program, pointer)
-    let trace = List.append(list{pointer}, state.trace)
-    switch ins {
-    | UNK | NOP(_) => exec(pointer + 1, {...state, trace: trace}, program)
-    | ACC(i) => exec(pointer + 1, {...state, acc: state.acc + i, trace: trace}, program)
-    | JMP(i) => exec(pointer + i, {...state, trace: trace}, program)
+    let state = {...state, trace: state.trace |> List.append(list{pointer})}
+    switch List.nth(program, pointer) {
+    | UNK => program |> exec(pointer + 1, state)
+    | NOP(_) => program |> exec(pointer + 1, state)
+    | ACC(i) => program |> exec(pointer + 1, {...state, acc: state.acc + i})
+    | JMP(i) => program |> exec(pointer + i, state)
     }
   }
 }
 
-let state = program |> exec(0, {acc: 0, trace: list{}, success: false})
+// Part 1
+
+let state = program |> exec(0, emptyState)
 state.acc |> Js.log2("1 >")
 
-// Part 2 ,, 8
+// Part 2
+// Reducing over the previus trace, one by one, trying to
+// flip one instruction at a time to see if the program terminates
+// correctly
+state.trace |> List.fold_left((cstate, i) => {
+  let inst = List.nth(program, i)
+  let inst = switch inst {
+  | NOP(i) => JMP(i)
+  | JMP(i) => NOP(i)
+  | _ => inst
+  }
 
-let rec exec2 = (pointer, state, program) => {
-  if pointer < 0 {
-    {...state, success: false}
-  } else if List.length(program) <= pointer {
-    {...state, success: true}
-  } else if state.trace |> List.exists(i => i == pointer) {
-    {...state, success: false}
-  } else {
-    let ins = List.nth(program, pointer)
-    let state = {...state, trace: state.trace |> List.append(list{pointer})}
-    switch ins {
-    | UNK | NOP(_) => exec2(pointer + 1, state, program)
-    | ACC(i) => exec2(pointer + 1, {...state, acc: state.acc + i}, program)
-    | JMP(i) => exec2(pointer + i, state, program)
+  switch inst {
+  | ACC(_) => cstate
+  | _ when cstate.success => cstate
+  | _ => {
+      let state =
+        program |> AOC.list_set(i, inst) |> exec(0, {acc: 0, trace: list{}, success: false})
+      state.success ? state : cstate
     }
   }
-}
-
-state.trace |> List.fold_left((acc, i) => {
-  if acc.success {
-    acc
-  } else {
-    let inst = List.nth(program, i)
-
-    let inst = switch inst {
-    | NOP(i) => JMP(i)
-    | JMP(i) => NOP(i)
-    | _ => inst
-    }
-
-    switch inst {
-    | ACC(_) => acc
-    | _ => {
-        let newp = program |> AOC.list_set(i, inst)
-
-        let nstate = newp |> exec2(0, {acc: 0, trace: list{}, success: false})
-
-        nstate.success ? nstate : acc
-      }
-    }
-  }
-}, {acc: 0, trace: list{}, success: false}) |> (s => s.acc) |> Js.log2("2 >")
+}, emptyState) |> (s => s.acc) |> Js.log2("2 >")
