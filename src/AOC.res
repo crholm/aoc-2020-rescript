@@ -22,6 +22,10 @@ let filteri: ((int, 'a) => bool, list<'a>) => list<'a> = (fn, l) => {
   res
 }
 
+let list_set = (i, el, l) => {
+  l |> List.mapi((ii, e) => ii == i ? el : e)
+}
+
 let charlist_of_string = str => List.init(String.length(str), String.get(str))
 
 let min_of_list = (l: list<'a>) => {
