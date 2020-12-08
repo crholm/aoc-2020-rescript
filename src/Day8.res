@@ -1,4 +1,4 @@
-// https://adventofcode.com/2020/day/6
+// https://adventofcode.com/2020/day/8
 
 module Data = Data_Day8
 module AOC = AOC
