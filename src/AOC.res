@@ -22,6 +22,32 @@ let filteri: ((int, 'a) => bool, list<'a>) => list<'a> = (fn, l) => {
   res
 }
 
+let rec drop: (int, list<'a>) => list<'a> = (i, l) =>
+  if l |> List.length < i {
+    list{}
+  } else if i > 0 {
+    drop(i - 1, l |> List.tl)
+  } else {
+    l
+  }
+
+let take: (int, list<'a>) => list<'a> = (i, l) => {
+  let rec take = (acc, l, i) => {
+    i < 1 ? acc : take(List.append(acc, list{l |> List.hd}), l |> List.tl, i - 1)
+  }
+
+  if l |> List.length < i {
+    list{}
+  } else {
+    take(list{}, l, i)
+  }
+}
+
+let rec drop_while: (('a, list<'a>) => bool, list<'a>) => list<'a> = (fn, l) => {
+  let h = l |> List.hd
+  !fn(h, l) ? l : drop_while(fn, l |> List.tl)
+}
+
 let charlist_of_string = str => List.init(String.length(str), String.get(str))
 
 let min_of_list = (l: list<'a>) => {
