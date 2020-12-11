@@ -3,43 +3,36 @@ module AOC = AOC
 AOC.print_header(10)
 
 let input = Data.str |> AOC.str_split("\n") |> List.map(int_of_string)
+let max = input->AOC.max_of_list
+let input = list{0, max + 3, ...input}
 
 type diffs = {
   at: int,
-  once: list<int>,
-  twos: list<int>,
-  threes: list<int>,
+  once: int,
+  threes: int,
 }
-let empty = {at: 0, once: list{}, twos: list{}, threes: list{}}
+let empty = {at: 0, once: 0, threes: 0}
 
-let res = input |> List.sort(Pervasives.compare) |> List.fold_left((acc, e) => {
+input |> List.sort(Pervasives.compare) |> List.fold_left((acc, e) => {
   let at = acc.at
   switch e - at {
-  | 1 => {...acc, at: e, once: list{e, ...acc.once}}
-  | 2 => {...acc, at: e, twos: list{e, ...acc.twos}}
-  | 3 => {...acc, at: e, threes: list{e, ...acc.threes}}
+  | 1 => {...acc, at: e, once: acc.once + 1}
+  | 3 => {...acc, at: e, threes: acc.threes + 1}
   | _ => acc
   }
-}, empty)
-
-let max = input |> AOC.max_of_list
-
-let res = {...res, threes: list{max + 3, ...res.threes}}
-
-Js.log2("1 >", List.length(res.once) * List.length(res.threes))
+}, empty) |> (a => a.once * a.threes |> Js.log2("1 >"))
 
 let rec trace = (current, input) => {
   let len = List.length(input)
-  if len == 0 {
-    1
-  } else if len > 2 && List.nth(input, 2) == current + 3 {
+  switch len {
+  | 0 => 1
+  | l when l > 2 && List.nth(input, 2) == current + 3 =>
     trace(List.nth(input, 0), AOC.drop(1, input)) +
     trace(List.nth(input, 1), AOC.drop(2, input)) +
     trace(List.nth(input, 2), AOC.drop(3, input))
-  } else if len > 1 && List.nth(input, 1) == current + 2 {
+  | l when l > 1 && List.nth(input, 1) == current + 2 =>
     trace(List.nth(input, 0), AOC.drop(1, input)) + trace(List.nth(input, 1), AOC.drop(2, input))
-  } else {
-    trace(List.nth(input, 0), AOC.drop(1, input))
+  | _ => trace(List.nth(input, 0), AOC.drop(1, input))
   }
 }
 
@@ -53,13 +46,13 @@ input
 |> List.append(list{0, max + 3})
 |> List.sort(Pervasives.compare)
 |> List.fold_left((acc, e) => {
-  if e == acc.last + 3 {
-    let part = acc.part |> List.sort(Pervasives.compare)
-    let res = Int64.of_int(trace(List.hd(part), List.tl(part)))
-    {part: list{e}, last: 0, res: Int64.mul(acc.res, res)}
-  } else {
-    {...acc, part: list{e, ...acc.part}, last: e}
-  }
+  e != acc.last + 3
+    ? {...acc, part: list{e, ...acc.part}, last: e}
+    : {
+        let part = acc.part |> List.sort(Pervasives.compare)
+        let res = Int64.of_int(trace(List.hd(part), List.tl(part)))
+        {part: list{e}, last: 0, res: Int64.mul(acc.res, res)}
+      }
 }, {part: list{}, last: 0, res: Int64.one})
 |> (a => a.res)
 |> Int64.to_string

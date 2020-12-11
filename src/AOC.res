@@ -82,3 +82,30 @@ let printn_l = (n, l) => {
   })
 }
 let print_l = l => l |> printn_l(List.length(l))
+
+
+let rec find: ('a => bool, list<'a>) => option<'a> = (fn, l) => {
+  switch l |> List.length {
+  | 0 => None
+  | _ =>
+    switch l |> List.hd |> fn {
+    | true => Some(l |> List.hd)
+    | false => find(fn, l |> List.tl)
+    }
+  }
+}
+
+let rec find_tuple: (('a, 'a) => bool, list<'a>) => option<('a, 'a)> = (fn, l) => {
+  switch l |> List.length {
+  | 0 => None
+  | _ => {
+      let x = l |> List.hd
+      let tail = l |> List.tl
+
+      switch tail |> find(x |> fn) {
+      | None => tail |> find_tuple(fn)
+      | Some(y) => Some(x, y)
+      }
+    }
+  }
+}
