@@ -48,6 +48,15 @@ let rec drop_while: (('a, list<'a>) => bool, list<'a>) => list<'a> = (fn, l) => 
   !fn(h, l) ? l : drop_while(fn, l |> List.tl)
 }
 
+let drop_right: (int, list<'a>) => list<'a> = (i, l) => l |> List.rev |> drop(i) |> List.rev
+
+let slice: (int, int, list<'a>) => list<'a> = (starti, stopi, l) => {
+  let len = l |> List.length
+  let start = starti >= 0 ? starti : 0
+  let stop = stopi >= 0 ? stopi : len
+  l |> drop(start) |> drop_right(len - stop)
+}
+
 let charlist_of_string = str => List.init(String.length(str), String.get(str))
 
 let min_of_list = (l: list<'a>) => {
@@ -82,7 +91,6 @@ let printn_l = (n, l) => {
   })
 }
 let print_l = l => l |> printn_l(List.length(l))
-
 
 let rec find: ('a => bool, list<'a>) => option<'a> = (fn, l) => {
   switch l |> List.length {
