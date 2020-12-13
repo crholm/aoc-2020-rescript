@@ -38,10 +38,13 @@ let apply_turn_left = ((dx, dy), deg) => {
   }
 }
 
+let apply_turn_right = (xy, deg) => apply_turn_left(xy, 360 - deg)
+
 let turn_left = (current, deg) => {
   let xy = current->of_direction
   apply_turn_left(xy, deg)->to_direction
 }
+let turn_right = (current, deg) => turn_left(current, 360 - deg)
 
 type instruction =
   North(int) | East(int) | South(int) | West(int) | Left(int) | Right(int) | Forward(int)
@@ -61,6 +64,7 @@ let prog = Data.str->AOC.str_split("\n", _)->List.keepMap(l => {
   }
 })
 
+// Part 1
 type state = {
   dir: direction,
   x: int,
@@ -83,7 +87,7 @@ let state = prog->List.reduce(empty, (acc, ins) => {
       {...acc, dir: n_dir}
     }
   | Right(i) => {
-      let n_dir = acc.dir->turn_left(360 - i)
+      let n_dir = acc.dir->turn_right(i)
       {...acc, dir: n_dir}
     }
   }
@@ -91,6 +95,7 @@ let state = prog->List.reduce(empty, (acc, ins) => {
 
 state->(a => to_manhattan(a.x, a.y))->Js.log2("1 >", _)
 
+// Part 2
 type wstate = {
   x: int,
   y: int,
@@ -112,7 +117,7 @@ prog->List.reduce(empty2, (acc, ins) => {
       {...acc, wx: wx, wy: wy}
     }
   | Right(i) => {
-      let (wx, wy) = apply_turn_left((acc.wx, acc.wy), 360 - i)
+      let (wx, wy) = apply_turn_right((acc.wx, acc.wy), i)
       {...acc, wx: wx, wy: wy}
     }
   }

@@ -4,74 +4,59 @@ module AOC = AOC
 module Data = Data_Day13
 AOC.print_header(13)
 
-let str = "939
-7,13,x,x,59,x,31,19"
+type bus = {
+  num: Int64.t,
+  offset: Int64.t,
+  scaler: Int64.t,
+}
 
-let tmp = Data.str->AOC.str_split("\n", _)
-let offset = tmp->List.getExn(0)->int_of_string
-let busses = tmp->List.getExn(1)->AOC.str_split(",", _)->List.keepMap(e => {
-  switch e {
-  | "x" => None
-  | _ => Some(e->int_of_string)
-  }
-})
+let earilest = Data.str->AOC.str_split("\n", _)->List.getExn(0)->Int64.of_string
+let busses =
+  Data.str
+  ->AOC.str_split("\n", _)
+  ->List.getExn(1)
+  ->AOC.str_split(",", _)
+  ->List.mapWithIndex((i, e) => {
+    switch e {
+    | "x" => None
+    | _ =>
+      Some({
+        num: e->int_of_string->Int64.of_int,
+        offset: i->Int64.of_int,
+        scaler: e->int_of_string->Int64.of_int,
+      })
+    }
+  })
+  ->List.keepMap(a => a)
+
+// Part 1
 
 busses->List.map(n => {
-  (n, n - mod(offset, n))
-})->List.sort(((_, a), (_, b)) => a - b)->List.headExn->(((n, diff)) => n * diff)->Js.log2("1 >", _)
+  (n.num, Int64.sub(n.num, Int64.rem(earilest, n.num)))
+})->List.sort(((_, a), (_, b)) =>
+  Int64.compare(a, b)
+)->List.headExn->(((n, diff)) => Int64.mul(n, diff))->Int64.to_string->Js.log2("1 >", _)
 
-let str = "939
-7,13,x,x,59,x,31,19" // 1068781
-// let str2 = "123
-// 1789,37,47,1889"
-// let str = "939
-// 7,13,59"
-
-let tmp = Data.str->AOC.str_split("\n", _)
-let busses = tmp->List.getExn(1)->AOC.str_split(",", _)->List.mapWithIndex((i, e) => {
-  switch e {
-  | "x" => None
-  | _ => Some((e->int_of_string->Int64.of_int, i->Int64.of_int, e->int_of_string->Int64.of_int))
-  }
-})->List.keepMap(a => a)
-
-// let busses = busses->List.sort(((_, a), (_, b)) => Int64.compare(a, b))
-
-let rec calc = (mul, busses) => {
-  let (n, _, scaler) = List.headExn(busses)
-  let t = Int64.add(n, Int64.mul(scaler, mul))
-  let res = busses->List.tailExn->List.every(((n, i, _)) => {
-    Int64.rem(Int64.add(t, i), n)->Int64.compare(Int64.zero) == 0
-  })
-  if res {
-    t
-  } else {
-    calc(Int64.add(mul, Int64.one), busses)
-  }
+// Part 2
+let rec common_time = (mul, t0: bus, t1: bus) => {
+  let t = Int64.add(t0.num, Int64.mul(t0.scaler, mul))
+  Int64.rem(Int64.add(t, t1.offset->Int64.sub(t0.offset)), t1.num)->Int64.compare(Int64.zero) == 0
+    ? t
+    : common_time(Int64.add(mul, Int64.one), t0, t1)
 }
 
-let rec dcalc = (busses: list<(int64, int64, int64)>) => {
-  //   Js.log("-->")
-  //   busses->AOC.print_l
+let rec calc = (busses: list<bus>) => {
   if List.length(busses) == 1 {
-    busses->List.headExn
+    let b = busses->List.headExn
+    {...b, num: Int64.sub(b.num, b.offset), offset: Int64.zero}
   } else {
-    let head = busses->List.take(2)->Option.getWithDefault(list{})
+    let e0 = busses->List.getExn(0)
+    let e1 = busses->List.getExn(1)
     let tail = busses->List.drop(2)->Option.getWithDefault(list{})
-    let t = calc(Int64.zero, head)
 
-    let (_, _, s1) = head->List.getExn(0)
-    let (_, _, s2) = head->List.getExn(1)
-    let scaler = Int64.mul(s1, s2)
-
-    let n_buss = (t, Int64.zero, scaler)
-    let busses = List.concat(list{n_buss}, tail)
-    dcalc(busses)
+    let e0 = {...e0, num: common_time(Int64.one, e0, e1), scaler: Int64.mul(e0.scaler, e1.scaler)}
+    calc(list{e0, ...tail})
   }
 }
 
-let res = dcalc(busses)
-res->(((a, _, _)) => Int64.to_string(a))->Js.log2("2 >", _)
-// === AOC Day 13 ===
-// 1 > 4135
-// 2 > 640856202464541
+busses->calc->(a => Int64.to_string(a.num))->Js.log2("2 >", _)
