@@ -30,12 +30,14 @@ let busses =
   ->List.keepMap(a => a)
 
 // Part 1
+let d = AOC.timer_start()
 
 busses->List.map(n => {
   (n.num, Int64.sub(n.num, Int64.rem(earilest, n.num)))
 })->List.sort(((_, a), (_, b)) =>
   Int64.compare(a, b)
 )->List.headExn->(((n, diff)) => Int64.mul(n, diff))->Int64.to_string->Js.log2("1 >", _)
+d->AOC.timer_stop("  >")
 
 // Part 2
 let rec common_time = (mul, t0: bus, t1: bus) => {
@@ -59,4 +61,6 @@ let rec calc = (busses: list<bus>) => {
   }
 }
 
+let d = AOC.timer_start()
 busses->calc->(a => Int64.to_string(a.num))->Js.log2("2 >", _)
+d->AOC.timer_stop("  >")

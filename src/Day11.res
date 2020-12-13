@@ -105,19 +105,21 @@ let initmap = l->List.reduceWithIndex(GOL.emptyMap, (acc, row, y) => {
 
 let adjacentClose = (m: GOL.t, x, y) => {
   let (dimx, dimy) = m.dim
-  let adj = list{(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)}
-  adj->List.map(((dx, dy)) => (dx + x, dy + y))->List.keep(((x, y)) => {
+  list{(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)}
+  ->List.map(((dx, dy)) => (dx + x, dy + y))
+  ->List.keep(((x, y)) => {
     x > -1 && y > -1 && x < dimx && y < dimy
-  })->List.map(((x, y)) => m->GOL.get(x, y))
+  })
+  ->List.map(((x, y)) => m->GOL.get(x, y))
 }
 
 let map_tile4 = (m: GOL.t, x, y, adj): GOL.tile => {
   let tile = GOL.get(m, x, y)
   switch tile {
   | GOL.Floor => Floor
-  | GOL.Empty => adj(m, x, y)->List.has(GOL.Occupied, (a, b) => a == b) ? GOL.Empty : GOL.Occupied
+  | GOL.Empty => m->adj(x, y)->List.has(GOL.Occupied, (a, b) => a == b) ? GOL.Empty : GOL.Occupied
   | GOL.Occupied =>
-    adj(m, x, y)->List.keep(t => t == GOL.Occupied)->List.length < 4 ? GOL.Occupied : GOL.Empty
+    m->adj(x, y)->List.keep(t => t == GOL.Occupied)->List.length < 4 ? GOL.Occupied : GOL.Empty
   }
 }
 
@@ -128,6 +130,7 @@ let dimx = l->List.headExn->List.length
 
 let s1: GOL.t = {dim: (dimx, dimy), t: initmap}
 
+let d = AOC.timer_start()
 s1
 ->run(GOL.empty, update_state(pt1))
 ->GOL.to_list
@@ -135,6 +138,7 @@ s1
 ->List.length
 ->Js.log2("1 >", _)
 
+d->AOC.timer_stop("  >")
 // Part 2
 
 let adjacentFar = (m: GOL.t, x, y) => {
@@ -143,7 +147,19 @@ let adjacentFar = (m: GOL.t, x, y) => {
   let directions = list{(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)}
 
   directions->List.reduce(list{}, (acc, (dx, dy)) => {
-    let l = List.makeBy(_max, i => i + 1)
+    let size = switch (dx, dy) {
+    | (1, 0) => dimx - x
+    | (-1, 0) => x
+    | (0, 1) => dimy - y
+    | (0, -1) => y
+    | (1, 1) => max(dimx - x, dimy - y)
+    | (-1, -1) => max(x, y)
+    | (1, -1) => max(dimx - x, y)
+    | (-1, 1) => max(x, dimy - y)
+    | (_, _) => _max
+    }
+
+    let l = List.makeBy(size, i => i + 1)
     let maybeTile = l->List.reduce(None, (acc, i) => {
       switch acc {
       | Some(t) => Some(t)
@@ -177,6 +193,7 @@ let map_tile5 = (m: GOL.t, x, y, adj): GOL.tile => {
 
 let pt2 = {adjacent: adjacentFar, map_tile: map_tile5}
 
+let d = AOC.timer_start()
 s1
 ->run(GOL.empty, update_state(pt2))
 ->GOL.to_list
@@ -184,5 +201,6 @@ s1
 ->List.length
 ->Js.log2("2 >", _)
 
+d->AOC.timer_stop("  >")
 // 1 > 2448
 // 2 > 2234

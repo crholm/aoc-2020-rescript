@@ -2,6 +2,9 @@ let print_header = day => {
   Js.log3("\n=== AOC Day", day, "===")
 }
 
+let timer_start = () => Js.Date.now()
+let timer_stop = (d, name) => (Js.Date.now() -. d)->Js.log3(name, _, "ms")
+
 let str_split = (del, str) => {
   Js.String2.split(str, del) |> Array.to_list
 }
